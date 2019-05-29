@@ -124,6 +124,45 @@ contract FlightSuretyData {
         _;
     }
 
+     /**
+    * @dev Modifier that requires the airline address to be presend in airlines array
+    */
+    modifier requireAirLineExist(address airlineAddress)
+    {
+        require(airlines[airlineAddress].exists, "Airline does not exist in requireAirLineExist");
+        _;  // All modifiers require an "_" which indicates where the function body will be added
+    }
+
+    /**
+    * @dev Modifier that requires the airline address to be registered in airlines array
+    */
+    modifier requireAirLineRegistered(address airlineAddress)
+    {
+        require(airlines[airlineAddress].exists, "Airline does not exist in requireAirLineRegistered");
+        require(airlines[airlineAddress].registered, "Airline is not registered in requireAirLineRegistered");
+        _;  // All modifiers require an "_" which indicates where the function body will be added
+    }
+
+    /**
+    * @dev Modifier that requires the airline address to be funded in airlines array
+    */
+    modifier requireAirLineFunded(address airlineAddress)
+    {
+        require(airlines[airlineAddress].exists, "Airline does not exist in requireAirLineFunded");
+        require(airlines[airlineAddress].registered, "Airline is not registered in requireAirLineFunded");
+        require(airlines[airlineAddress].funded, "Airline is not funded in requireAirLineFunded");
+
+        _;  // All modifiers require an "_" which indicates where the function body will be added
+    }
+
+
+    modifier requireAuthorizedCaller(address contractAddress)
+    {
+        // require(authorizedCallers[contractAddress] == true, "Not Authorized Caller");
+        emit AuthorizedCallerCheck(contractAddress);
+        _;
+    }
+
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
