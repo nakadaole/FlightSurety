@@ -450,6 +450,42 @@ contract FlightSuretyData {
     returns(uint)
     {
         return registeredAirlinesCount.div(2);
+    }
+
+    function getInsuranceKey
+    (
+        bytes32 flightKey,
+        uint ticketNumber
+
+        )
+    private
+    pure
+    returns(bytes32)
+    {
+        return keccak256(abi.encodePacked(flightKey, ticketNumber));
+    }
+
+
+    function buildFlightInsurance
+    (
+        address airlineAddress,
+        bytes32 flightKey,
+        uint ticketNumber
+        )
+    public
+    requireAuthorizedCaller(msg.sender)
+    {
+        bytes32 insuranceKey = getInsuranceKey(flightKey, ticketNumber);
+
+        insurances[insuranceKey] = Insurance({
+            buyer: address(0),
+            airline: airlineAddress,
+            value: 0,
+            ticketNumber: ticketNumber,
+            state: InsuranceState.WaitingForBuyer
+            });
+
+        flightInsuranceKeys[flightKey].push(insuranceKey);
     } 
 }
 
