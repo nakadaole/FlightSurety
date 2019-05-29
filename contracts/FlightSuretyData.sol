@@ -196,6 +196,22 @@ contract FlightSuretyData {
         operational = mode;
     }
 
+    function authorizeCaller(address contractAddress)
+        public
+        requireContractOwner
+        requireIsOperational
+    {
+        authorizedCallers[contractAddress] = true;
+        emit AuthorizeCaller(contractAddress);
+    }
+
+    function callerIsAuthorized(address contractAddress)
+    public
+    returns(bool)
+    {
+        return authorizedCallers[contractAddress];
+    }
+
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
