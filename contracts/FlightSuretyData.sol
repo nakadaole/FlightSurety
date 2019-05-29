@@ -313,16 +313,32 @@ contract FlightSuretyData {
         airlines[airlineAddress].flightKeys.push(flightKey);
     }
 
-    
     /**
      *  @dev Credits payouts to insurees
-    */
-    function creditInsurees
-                                (
-                                )
-                                external
-                                pure
-    {
+     */
+     function creditInsurees
+     (
+        bytes32 flightKey,
+        uint8 creditRate
+        )
+     public
+     requireAuthorizedCaller(msg.sender)
+     {
+        bytes32[] storage _insurancesKeys = flightInsuranceKeys[flightKey];
+
+        for (uint i = 0; i < _insurancesKeys.length; i++) {
+            Insurance storage _insurance = insurances[_insurancesKeys[i]];
+
+            if (_insurance.state == InsuranceState.Bought) {
+                _insurance.value = _insurance.value.mul(creditRate).div(100);
+                if (_insurance.value > 0)
+                _insurance.state = InsuranceState.Passed;
+                else
+                _insurance.state = InsuranceState.Expired;
+                } else {
+                    _insurance.state = InsuranceState.Expired;
+                }
+            }
     }
 
     /**
