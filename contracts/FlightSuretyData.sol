@@ -260,7 +260,7 @@ contract FlightSuretyData {
 
     }
 
-     /**
+    /**
     * @dev vote for an airline to be registered 
     *
     */   
@@ -282,6 +282,23 @@ contract FlightSuretyData {
 
         require(endingVotes == startingVotes + 1, "Count was not incremented in voteForAirline");
         emit AirlineVoted(votingAirlineAddress,  airlineAddress, startingVotes, endingVotes);
+
+    }
+
+    /**
+    * @dev vote for an airline to be registered 
+    *
+    */  
+    function getAirlineVotesCount
+    (
+        address airlineAddress
+        )
+    public
+    requireIsOperational
+    returns(uint)
+    {
+        emit GetVotesCalled(airlines[airlineAddress].votes.votersCount);
+        return airlines[airlineAddress].votes.votersCount;
 
     }
 
