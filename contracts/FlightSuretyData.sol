@@ -59,6 +59,15 @@ contract FlightSuretyData {
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
 
+    event AirlineExist(address airlineAddress, bool exist);
+    event AirlineRegistered(address airlineAddress, bool exist, bool registered);
+    event AirlineFunded(address airlineAddress, bool exist, bool registered, bool funded, uint fundedCount);
+    event AirlineVoted(address votingAirlineAddress, address votedAirlineAddress, uint startingVotesCount, uint endingVotesCount);
+    event GetVotesCalled(uint votesCount);
+    event AuthorizedCallerCheck(address caller);
+    event AuthorizeCaller(address caller);
+    event InsurancePaid(uint amount, address to);
+    event InsuranceStateValue(InsuranceState state);
 
     /**
     * @dev Constructor
