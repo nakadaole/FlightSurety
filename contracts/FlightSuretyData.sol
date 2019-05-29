@@ -75,10 +75,26 @@ contract FlightSuretyData {
     */
     constructor
                                 (
+                                    address airlineAddress
                                 )
                                 public
     {
         contractOwner = msg.sender;
+        //init airline
+        airlines[airlineAddress] = Airline({
+            exists:true,
+            registered:true,
+            funded: false,
+            flightKeys: new bytes32[](0),
+            votes: Votes(0),
+            numberOfInsurance:0
+        });
+
+        airlinesCount = airlinesCount.add(1);
+        registeredAirlinesCount = registeredAirlinesCount.add(1);
+
+        emit AirlineExist(airlineAddress,  airlines[airlineAddress].exists);
+        emit AirlineRegistered( airlineAddress,  airlines[airlineAddress].exists, airlines[airlineAddress].registered);
     }
 
     /********************************************************************************************/
