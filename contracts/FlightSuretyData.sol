@@ -382,9 +382,74 @@ contract FlightSuretyData {
                             external
                             payable
     {
-        fund();
+        fund(msg.sender);
+    }
+
+    function airlineExists(address airlineAddress)
+    public
+    view
+    returns(bool)
+    {
+        return airlines[airlineAddress].exists;
+    }
+
+    function airlineRegistered(address airlineAddress)
+    public
+    view
+    returns(bool)
+    {
+        if (airlines[airlineAddress].exists){
+            bool registrationStatus = airlines[airlineAddress].registered;
+            return registrationStatus;
+        }
+        return false;
+    }
+
+    function airlineFunded(address airlineAddress)
+    public
+    view
+    returns(bool)
+    {
+        // require(airlines[airlineAddress].funded, "Airline is not funded in airlineFunded");
+        return airlines[airlineAddress].funded;
+    }
+
+    function getFundedAirlinesCount()
+    public
+    requireIsOperational
+    view
+    returns(uint)
+    {
+        return fundedAirlinesCount;
+    }
+
+    function getRegisteredAirlinesCount()
+    public
+    requireIsOperational
+    view
+    returns(uint)
+    {
+        return registeredAirlinesCount;
     }
 
 
+    function getExistAirlinesCount()
+    public
+    requireIsOperational
+    view
+    returns(uint)
+    {
+        return airlinesCount;
+    }
+
+
+
+    function getMinimumRequireVotingCount()
+    public
+    view
+    returns(uint)
+    {
+        return registeredAirlinesCount.div(2);
+    } 
 }
 
