@@ -302,6 +302,18 @@ contract FlightSuretyData {
 
     }
 
+    function addFlightKeyToAirline
+    (
+        address airlineAddress,
+        bytes32 flightKey
+        )
+    public
+    requireAuthorizedCaller(msg.sender)
+    {
+        airlines[airlineAddress].flightKeys.push(flightKey);
+    }
+
+    
     /**
      *  @dev Credits payouts to insurees
     */
