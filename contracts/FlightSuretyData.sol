@@ -486,6 +486,73 @@ contract FlightSuretyData {
             });
 
         flightInsuranceKeys[flightKey].push(insuranceKey);
-    } 
+    }
+
+    function fetchAirlineData(address airlineAddress)
+    public
+    
+    requireIsOperational
+    requireAuthorizedCaller(msg.sender)
+    requireAirLineExist(airlineAddress)
+    returns(
+        bool exists,
+        bool registered,
+        bool funded,
+        uint votesCount,
+        bytes32[] memory flightKeys,
+        uint numberOfInsurance
+        )
+    {
+        Airline memory _airline = airlines[airlineAddress];
+        return(
+            _airline.exists,
+            _airline.registered,
+            _airline.funded,
+            _airline.votes.votersCount,
+            _airline.flightKeys,
+            _airline.numberOfInsurance
+            );
+    }
+
+    function fetchInsuranceData(bytes32 insuranceKey)
+    public
+    
+    requireIsOperational
+    requireAuthorizedCaller(msg.sender)
+    returns(
+        address buyer,
+        address airline,
+        uint value,
+        uint ticketNumber,
+        InsuranceState state
+        )
+    {
+        Insurance memory _insurance = insurances[insuranceKey];
+        return(_insurance.buyer,
+            _insurance.airline,
+            _insurance.value,
+            _insurance.ticketNumber,
+            _insurance.state);
+    }
+
+    function fetchPasengerInsurances(address passengerAddress)
+    public
+    
+    requireIsOperational
+    requireAuthorizedCaller(msg.sender)
+    returns(bytes32[] memory)
+    {
+        return passengerInsuranceKeys[passengerAddress];
+    }
+
+    function fetchFlightInsurances(bytes32 flightKey)
+    public
+    
+    requireIsOperational
+    requireAuthorizedCaller(msg.sender)
+    returns(bytes32[] memory)
+    {
+        return flightInsuranceKeys[flightKey];
+    }
 }
 
