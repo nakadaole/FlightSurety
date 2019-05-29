@@ -554,5 +554,41 @@ contract FlightSuretyData {
     {
         return flightInsuranceKeys[flightKey];
     }
+
+    function payInsuree(bytes32 insuranceKey)
+    public
+    requireAuthorizedCaller(msg.sender)
+    {
+        Insurance memory _insurance = insurances[insuranceKey];
+        if (_insurance.state != InsuranceState.Passed){
+            emit InsuranceStateValue(_insurance.state);
+        }
+        require(_insurance.state == InsuranceState.Passed, "Insurance is not valid");
+        require(address(this).balance > _insurance.value, "try again later");
+
+        uint _value = _insurance.value;
+        _insurance.value = 0;
+        _insurance.state = InsuranceState.Expired;
+        address insuree = address(uint160(_insurance.buyer));
+        insuree.transfer(_value);
+        emit InsurancePaid(_value, insuree);
+    }
+
+    function buyInsurance
+    (
+        address  buyer,
+        bytes32 insuranceKey
+        )
+    public
+    payable
+    {
+        // require(insurances[insuranceKey].state == InsuranceState.WaitingForBuyer, "Insurance allredy bought, or not exist or expired");
+
+        insurances[insuranceKey].value = msg.value;
+        insurances[insuranceKey].buyer = buyer;
+        insurances[insuranceKey].state = InsuranceState.Bought;
+
+        //passengerInsuranceKeys[buyer].push(insuranceKey);
+    }
 }
 
