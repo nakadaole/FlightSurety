@@ -222,12 +222,30 @@ contract FlightSuretyData {
     *
     */
     function registerAirline
-                            (
-                            )
-                            external
-                            pure
+    (
+        address airlineAddress,
+        bool registered
+        )
+    requireIsOperational
+    public
     {
-        
+        airlines[airlineAddress] = Airline(
+        {
+            exists: true,
+            registered:registered, 
+            funded:false,
+            flightKeys: new bytes32[](0),
+            votes: Votes(0),
+            numberOfInsurance:0
+            });
+        airlinesCount = airlinesCount.add(1);
+        if(registered == true){
+            registeredAirlinesCount = registeredAirlinesCount.add(1);
+            emit AirlineRegistered( airlineAddress,  airlines[airlineAddress].exists, airlines[airlineAddress].registered);
+        }
+        else{
+            emit AirlineExist(airlineAddress,  airlines[airlineAddress].exists);
+        }
     }
 
 
