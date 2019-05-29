@@ -248,17 +248,15 @@ contract FlightSuretyData {
         }
     }
 
-
-   /**
-    * @dev Buy insurance for a flight
-    *
-    */
-    function buy
-                            (
-                            )
-                            external
-                            payable
+    function setAirlineRegistered(address airlineAddress)
+    requireIsOperational
+    requireAirLineExist(airlineAddress)
+    public
     {
+        require(airlines[airlineAddress].registered == false , "Airline is already registered in setAirlineRegistered");
+        airlines[airlineAddress].registered = true;
+        registeredAirlinesCount = registeredAirlinesCount.add(1);
+        emit AirlineRegistered( airlineAddress,  airlines[airlineAddress].exists, airlines[airlineAddress].registered);
 
     }
 
