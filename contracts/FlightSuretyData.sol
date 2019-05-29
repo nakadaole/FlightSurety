@@ -260,6 +260,31 @@ contract FlightSuretyData {
 
     }
 
+     /**
+    * @dev vote for an airline to be registered 
+    *
+    */   
+    function voteForAirline
+    (
+        address votingAirlineAddress,
+        address airlineAddress
+        )
+    public
+    requireIsOperational
+    {
+        require(airlines[airlineAddress].votes.voters[votingAirlineAddress] == false, "Airline already voted in voteForAirline");
+        airlines[airlineAddress].votes.voters[votingAirlineAddress] = true;
+        uint startingVotes = getAirlineVotesCount(airlineAddress);
+
+        require(airlines[airlineAddress].votes.voters[votingAirlineAddress] == true, "Voter record was not saved in voteForAirline");
+        airlines[airlineAddress].votes.votersCount = startingVotes.add(1);
+        uint endingVotes = getAirlineVotesCount(airlineAddress);
+
+        require(endingVotes == startingVotes + 1, "Count was not incremented in voteForAirline");
+        emit AirlineVoted(votingAirlineAddress,  airlineAddress, startingVotes, endingVotes);
+
+    }
+
     /**
      *  @dev Credits payouts to insurees
     */
