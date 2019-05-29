@@ -341,31 +341,26 @@ contract FlightSuretyData {
             }
     }
 
-    /**
-     *  @dev Transfers eligible payout funds to insuree
-     *
-    */
-    function pay
-                            (
-                            )
-                            external
-                            pure
-    {
-    }
-
    /**
     * @dev Initial funding for the insurance. Unless there are too many delayed flights
     *      resulting in insurance payouts, the contract should be self-sustaining
     *
-    */
+    */   
     function fund
-                            (
-                            )
-                            public
-                            payable
+    (address airlineAddress)
+    public
+    payable
+    requireIsOperational
+    requireAirLineRegistered(airlineAddress)
     {
+        require(msg.value >= 10 ether, "No suffecient funds supplied");
+        airlines[airlineAddress].funded = true;
+        fundedAirlinesCount = fundedAirlinesCount.add(1);
+        emit AirlineFunded( airlineAddress,  airlines[airlineAddress].exists, airlines[airlineAddress].registered,  airlines[airlineAddress].funded, fundedAirlinesCount );
+
     }
 
+    //generate flight key
     function getFlightKey
                         (
                             address airline,
