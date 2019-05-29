@@ -16,6 +16,10 @@ contract FlightSuretyApp {
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
 
+    uint256 MinimumAirLinesCount = 4;
+
+    uint8 private constant CREDIT_RATE = 150;
+
     // Flight status codees
     uint8 private constant STATUS_CODE_UNKNOWN = 0;
     uint8 private constant STATUS_CODE_ON_TIME = 10;
@@ -26,8 +30,12 @@ contract FlightSuretyApp {
 
     address private contractOwner;          // Account used to deploy contract
 
+    bool private operational = true;
+
     struct Flight {
         bool isRegistered;
+        string name;
+        uint256 departure;
         uint8 statusCode;
         uint256 updatedTimestamp;
         address airline;

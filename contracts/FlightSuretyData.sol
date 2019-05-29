@@ -4,14 +4,57 @@ import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract FlightSuretyData {
     using SafeMath for uint256;
+    using SafeMath for uint;
 
     /********************************************************************************************/
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
 
     address private contractOwner;                                      // Account used to deploy contract
-    bool private operational = true;                                    // Blocks all state changes throughout the contract if false
+    bool private operational = true;
+    
+    mapping(address=>bool) private authorizedCallers;                             // Blocks all state changes throughout the contract if false
 
+    struct Airline{
+        bool exists;
+        bool registered;
+        bool funded;
+        bytes32[] flightKeys;
+        Votes votes;
+        uint numberOfInsurance;
+    }
+ 
+    struct Votes{
+        uint votersCount;
+        mapping(address => bool) voters;
+    }
+
+    struct Insurance {
+        address buyer;
+        address airline;
+        uint value;
+        uint ticketNumber;
+        InsuranceState state;
+    }
+
+    enum InsuranceState {
+        NotExist,
+        WaitingForBuyer,
+        Bought,
+        Passed,
+        Expired
+    }
+
+    mapping(bytes32 => Insurance) private insurances;
+    mapping(bytes32 => bytes32[]) private flightInsuranceKeys;
+    mapping(address => bytes32[]) private passengerInsuranceKeys;
+
+    uint private airlinesCount = 0;
+    uint private registeredAirlinesCount = 0;
+    uint private fundedAirlinesCount = 0;
+
+
+    mapping(address => Airline) private airlines;
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
