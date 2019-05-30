@@ -130,6 +130,21 @@ contract FlightSuretyApp {
         return true;  // Modify to call data contract's status
     }
 
+          /**
+    * @dev Sets contract operations on/off
+    *
+    * When operational mode is disabled, all write transactions except for this one will fail
+    */    
+    function setOperatingStatus
+    (
+        bool mode
+        ) 
+    public
+    requireContractOwner 
+    {
+        operational = mode;
+    }
+
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
@@ -138,15 +153,24 @@ contract FlightSuretyApp {
    /**
     * @dev Add an airline to the registration queue
     *
-    */
+    */   
     function registerAirline
-                            (
-                            )
-                            external
-                            pure
-                            returns(bool success, uint256 votes)
+    (   
+        address airlineAddress
+        )
+    public
+    requireIsOperational
+    requireIsFundedAirLine(msg.sender)
     {
-        return (success, 0);
+        // bool needsVoting = airlineRegistrationNeedsVoting();
+        if ( dataContract.getRegisteredAirlinesCount() >= MinimumAirlinesCount){
+            dataContract.registerAirline(airlineAddress, false);
+            emit AirlineAdded(airlineAddress);
+        }
+        else{
+            dataContract.registerAirline(airlineAddress, true);
+            emit AirlineRegistered(airlineAddress);
+        }
     }
 
 
