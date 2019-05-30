@@ -45,6 +45,15 @@ contract FlightSuretyApp {
 
     FlightSuretyData dataContract;
 
+    event AirlineSwitchToRegistered(address airlineAddress, bool registered);
+    event AirlineAdded(address airlineAddress);
+    event AirlineRegistered(address airlineAddress);
+    event AirlineNotRegistered(address airlineAddress, uint a, uint b, bool c);
+    event FlightRegistered(bytes32 flightKey);
+    event FlightTicketsAdded(uint[] ticketsNumbers, bytes32 flightKey);
+    event CreditDrawed(uint value);
+    event InsuranceBought(bytes32 insuranceKey);
+    event OracleRegistered(address oracleaddress, bool isRegistered);
     /********************************************************************************************/
     /*                                       FUNCTION MODIFIERS                                 */
     /********************************************************************************************/
@@ -70,6 +79,24 @@ contract FlightSuretyApp {
     modifier requireContractOwner()
     {
         require(msg.sender == contractOwner, "Caller is not contract owner");
+        _;
+    }
+
+     modifier requireIsAirLine(address airlineAddress)
+    {
+        require(dataContract.airlineExists(airlineAddress), "Airline does not exist in requireIsAirLine");
+        _;
+    }
+
+    modifier requireIsRegisteredAirLine(address airlineAddress)
+    {
+        require(dataContract.airlineRegistered(airlineAddress), "Airline is not registered in requireIsRegisteredAirLine");
+        _;
+    }
+
+    modifier requireIsFundedAirLine(address airlineAddress)
+    {
+        require(dataContract.airlineFunded(airlineAddress), "Airline is not funded in requireIsFundedAirLine");
         _;
     }
 
