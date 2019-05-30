@@ -190,6 +190,32 @@ contract FlightSuretyApp {
         dataContract.fund.value(10 ether)(airlineAddress);
     }
 
+   /**
+    * @dev vote for an airline to be registered 
+    *
+    */   
+    function voteForAirline
+    (
+        address airlineAddress
+        )
+    public
+    requireIsOperational
+    requireIsFundedAirLine(msg.sender)
+    requireIsAirLine(airlineAddress)
+    {
+        dataContract.voteForAirline(msg.sender, airlineAddress);
+        uint voteCount = dataContract.getAirlineVotesCount(airlineAddress);
+        uint minimumRequireVotingCount = dataContract.getMinimumRequireVotingCount();
+        bool registrationStatus = dataContract.airlineRegistered(airlineAddress);
+        if ( voteCount > minimumRequireVotingCount && !registrationStatus){
+            dataContract.setAirlineRegistered(airlineAddress);
+            emit AirlineRegistered(airlineAddress);
+        }
+        else{
+            //for testing purposes
+            emit AirlineNotRegistered(airlineAddress, voteCount, minimumRequireVotingCount, registrationStatus);
+        }
+    }
 
    /**
     * @dev Register a future flight for insuring.
