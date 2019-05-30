@@ -173,6 +173,23 @@ contract FlightSuretyApp {
         }
     }
 
+    /**
+    * @dev Add an airline to the registration queue
+    *
+    */   
+    function fundAirline
+    (
+        address airlineAddress
+        )
+    public
+    payable
+    requireIsOperational
+    {
+        require(msg.sender == airlineAddress, "Only the airline can fund itself");
+        require(msg.value >= REGISTRATION_FEE, "No enough funding recieved");
+        dataContract.fund.value(10 ether)(airlineAddress);
+    }
+
 
    /**
     * @dev Register a future flight for insuring.
