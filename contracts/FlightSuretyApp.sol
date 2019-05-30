@@ -217,6 +217,42 @@ contract FlightSuretyApp {
         }
     }
 
+    /**
+    * @dev Register a future flight for insuring.
+    *
+    */  
+    function registerFlight
+    (
+        uint256 departure,
+        uint256[] ticketNumbers,
+        string flightName
+        )
+    public
+    requireIsOperational
+    requireIsFundedAirLine(msg.sender)
+    {
+        bytes32 flightKey = getFlightKey(msg.sender, flightName, departure);
+        require(!flights[flightKey].isRegistered, "Flight is already registered");
+
+        flights[flightKey] = Flight ({
+            isRegistered: true,
+            name: flightName,
+            departure: departure,
+            statusCode: 0,
+            updatedTimestamp: now,
+            airline: msg.sender
+            });
+
+        dataContract.addFlightKeyToAirline(msg.sender, flightKey);
+
+        for (uint i = 0; i < ticketNumbers.length; i++) {
+            dataContract.buildFlightInsurance(msg.sender, flightKey, ticketNumbers[i]);
+        }
+
+        emit FlightRegistered(flightKey);
+        emit FlightTicketsAdded(ticketNumbers, flightKey);
+    }
+
    /**
     * @dev Register a future flight for insuring.
     *
