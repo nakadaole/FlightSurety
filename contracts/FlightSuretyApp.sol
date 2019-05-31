@@ -322,6 +322,50 @@ contract FlightSuretyApp {
         emit OracleRequest(index, airline, flight, timestamp);
     }
 
+    function getAirline(address airlineAddress)
+    public
+    view
+    returns(
+        bool isExist,
+        bool registered,
+        bool funded,
+        uint votesCount,
+        bytes32[] memory flightKeys,
+        uint numberOfInsurance
+        )
+    {
+        return dataContract.fetchAirlineData(airlineAddress);
+    }
+
+    function getFlight
+    (
+        address airlineAddress,
+        string flightName,
+        uint departureTime
+        )
+    public
+    view
+    returns(
+        bool isRegistered,
+        string memory name,
+        uint256 departure,
+        uint8 statusCode,
+        uint256 updatedTimestamp,
+        address airline
+        )
+    {
+        bytes32 flightKey = getFlightKey(airlineAddress, flightName, departureTime);
+        return (
+            flights[flightKey].isRegistered,
+            flights[flightKey].name,
+            flights[flightKey].departure,
+            flights[flightKey].statusCode,
+            flights[flightKey].updatedTimestamp,
+            flights[flightKey].airline
+
+            );
+    }
+
 
 // region ORACLE MANAGEMENT
 
