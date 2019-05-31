@@ -45,7 +45,7 @@ var Config = async function(accounts) {
     let flights = [
     {
         airlineAddress: firstAirline,
-        name: 'HR305',
+        name: 'ND305',
         departure: Math.floor(Date.now() / 1000),
         ticketNumbers: ['102', '103', '124', '152', '161', '172', '173', '174', '201', '205'],
         extraTicketNumbers: ['101', '104', '131', '132', '133', '134', '141', '144', '202'],
@@ -54,7 +54,7 @@ var Config = async function(accounts) {
     },
     {
         airlineAddress: airlines[0],
-        name: 'JR225',
+        name: 'ND225',
         departure: Math.floor(Date.now() / 1000),
         ticketNumbers: ['101', '103', '104', '132', '161', '171', '172', '221', '231', '244'],
         statusCode: STATUS_CODE.ON_TIME,

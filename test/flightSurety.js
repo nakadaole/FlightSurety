@@ -349,12 +349,12 @@ contract('Flight Surety Tests', async (accounts) => {
             reseponseCounter += 1;
             if (reseponseCounter >= 3) {
               TruffleAssert.eventEmitted(tx, 'FlightStatusInfo', (ev) => {
-                console.log(`**--> Report from oracles[${i}].index[${idx}]:(${oracleIndexes[idx]}) 👏🏽👏🏽👏🏽👏🏽 updated flight with status code ${ev.status}`);
+                console.log(`**--> Report from oracles[${i}].index[${idx}]:(${oracleIndexes[idx]}) updated flight with status code ${ev.status}`);
                 return true;
               });
             } else {
               TruffleAssert.eventEmitted(tx, 'OracleReport', (ev) => {
-                console.log(`--> Report from oracles[${i}].index[${idx}]:(${oracleIndexes[idx]}) 👏🏽 accepted with status code ${ev.status}`);
+                console.log(`--> Report from oracles[${i}].index[${idx}]:(${oracleIndexes[idx]}) accepted with status code ${ev.status}`);
                 return true;
               });
             }
@@ -399,12 +399,12 @@ contract('Flight Surety Tests', async (accounts) => {
 
             if (rightReseponseCounter >= 3 || wrongReseponseCounter >= 3) {
               TruffleAssert.eventEmitted(tx, 'FlightStatusInfo', (ev) => {
-                console.log(`**--> Report from oracles[${i}].index[${idx}]:(${oracleIndexes[idx]}) 👏🏽👏🏽👏🏽👏🏽 updated flight with status code ${ev.status}`);
+                console.log(`**--> Report from oracles[${i}].index[${idx}]:(${oracleIndexes[idx]}) updated flight with status code ${ev.status}`);
                 return true;
               });
             } else {
               TruffleAssert.eventEmitted(tx, 'OracleReport', (ev) => {
-                console.log(`--> Report from oracles[${i}].index[${idx}]:(${oracleIndexes[idx]}) 👏🏽 accepted with status code ${ev.status}`);
+                console.log(`--> Report from oracles[${i}].index[${idx}]:(${oracleIndexes[idx]}) accepted with status code ${ev.status}`);
                 return true;
               });
             }
