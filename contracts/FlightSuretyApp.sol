@@ -504,7 +504,7 @@ contract FlightSuretyApp {
     uint8 private nonce = 0;
 
     // Fee to be paid when registering oracle
-    uint256 public constant REGISTRATION_FEE = 1 ether;
+    uint256 public constant REGISTRATION_FEE = 10 ether;
 
     // Number of oracles that must respond for valid status
     uint256 private constant MIN_RESPONSES = 3;
@@ -559,6 +559,7 @@ contract FlightSuretyApp {
                                         isRegistered: true,
                                         indexes: indexes
                                     });
+        emit OracleRegistered( msg.sender, oracles[msg.sender].isRegistered);
     }
 
     function getMyIndexes
@@ -581,14 +582,14 @@ contract FlightSuretyApp {
     // and matches one of the three Indexes randomly assigned to the oracle at the
     // time of registration (i.e. uninvited oracles are not welcome)
     function submitOracleResponse
-                        (
-                            uint8 index,
-                            address airline,
-                            string calldata flight,
-                            uint256 timestamp,
-                            uint8 statusCode
-                        )
-                        external
+    (
+        uint8 index,
+        address airline,
+        string flight,
+        uint256 timestamp,
+        uint8 statusCode
+        )
+    public
     {
         require((oracles[msg.sender].indexes[0] == index) || (oracles[msg.sender].indexes[1] == index) || (oracles[msg.sender].indexes[2] == index), "Index does not match oracle request");
 
@@ -601,8 +602,10 @@ contract FlightSuretyApp {
         // Information isn't considered verified until at least MIN_RESPONSES
         // oracles respond with the *** same *** information
         emit OracleReport(airline, flight, timestamp, statusCode);
-        if (oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES) {
 
+
+        if (oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES) {
+            oracleResponses[key].isOpen = false;
             emit FlightStatusInfo(airline, flight, timestamp, statusCode);
 
             // Handle flight status as appropriate
