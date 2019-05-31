@@ -366,6 +366,137 @@ contract FlightSuretyApp {
             );
     }
 
+    function creditInsurees
+    (
+        address airlineAddress,
+        string flightName,
+        uint departureTime,
+        uint _ticketNumber
+        )
+    public
+    view
+    returns(
+        address buyer,
+        address airline,
+        uint value,
+        uint ticketNumber,
+        FlightSuretyData.InsuranceState state
+        )
+    {
+        bytes32 flightKey = getFlightKey(airlineAddress, flightName, departureTime);
+        bytes32 insuranceKey = getInsuranceKey(flightKey, _ticketNumber);
+
+        return dataContract.fetchInsuranceData(insuranceKey);
+    }
+
+    function getInsurance
+    (
+        address airlineAddress,
+        string flightName,
+        uint departureTime,
+        uint _ticketNumber
+        )
+    external
+    view
+    returns(
+        address buyer,
+        address airline,
+        uint value,
+        uint ticketNumber,
+        FlightSuretyData.InsuranceState state
+        )
+    {
+        bytes32 flightKey = getFlightKey(airlineAddress, flightName, departureTime);
+        bytes32 insuranceKey = getInsuranceKey(flightKey, _ticketNumber);
+
+        return dataContract.fetchInsuranceData(insuranceKey);
+    }
+    function getInsuranceKey
+    (
+        bytes32 flightKey,
+        uint ticketNumber
+
+        )
+    internal
+    pure
+    returns(bytes32)
+    {
+        return keccak256(abi.encodePacked(flightKey, ticketNumber));
+    }
+
+
+    function getInsuranceKeysOfPassanger(address _address)
+    public
+    view
+    returns(bytes32[] memory)
+    {
+        return dataContract.fetchPasengerInsurances(_address);
+    }
+
+    function getInsuranceKeysOfFlight
+    (
+        address airlineAddress,
+        string flightName,
+        uint departureTime
+        )
+    public
+    view
+    returns(bytes32[] memory)
+    {
+        bytes32 flightKey = getFlightKey(airlineAddress, flightName, departureTime);
+        return dataContract.fetchFlightInsurances(flightKey);
+    }
+
+    function buyInsurance
+    (
+        address airlineAddress,
+        string flightName,
+        uint256 departure,
+        uint256 ticketNumber
+        )
+    public
+    payable
+    requireIsOperational
+    {
+        require(msg.value > 0, "Insurance can accept more than 0");
+        require(msg.value <= 1 ether, "Insurance can accept less than 1 ether");
+
+        bytes32 flightKey = getFlightKey(airlineAddress, flightName, departure);
+        bytes32 insuranceKey = getInsuranceKey(flightKey, ticketNumber);
+
+        dataContract.buyInsurance.value(msg.value)(msg.sender, insuranceKey);
+
+        emit InsuranceBought(insuranceKey);
+    }
+
+
+    function payInsurance
+    (
+        address airlineAddress,
+        string flightName,
+        uint256 departure,
+        uint ticketNumber
+        )
+    public
+    requireIsOperational
+    {
+        bytes32 flightKey = getFlightKey(airlineAddress, flightName, departure);
+        bytes32 insuranceKey = getInsuranceKey(flightKey, ticketNumber);
+
+        (
+            address insuree,
+            ,
+            uint value,
+            ,
+            ) = dataContract.fetchInsuranceData(insuranceKey);
+
+        require(insuree == msg.sender, "You do not own this insurance");
+
+        dataContract.payInsuree(insuranceKey);
+        emit CreditDrawed(value);
+
+    }
+
 
 // region ORACLE MANAGEMENT
 
