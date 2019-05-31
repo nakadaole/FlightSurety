@@ -253,53 +253,71 @@ contract FlightSuretyApp {
         emit FlightTicketsAdded(ticketNumbers, flightKey);
     }
 
-   /**
-    * @dev Register a future flight for insuring.
-    *
-    */
-    function registerFlight
-                                (
-                                )
-                                external
-                                pure
+        function addFlightTickets
+    (
+        string flightName,
+        uint256 departure,
+        uint256[] ticketNumbers
+        )
+    public
+    requireIsOperational
+    requireIsFundedAirLine(msg.sender)
     {
+        bytes32 flightKey = getFlightKey(msg.sender, flightName, departure);
+        require(flights[flightKey].isRegistered, "Flight not registered");
+        for (uint i = 0; i < ticketNumbers.length; i++) {
+            dataContract.buildFlightInsurance(msg.sender, flightKey, ticketNumbers[i]);
+        }
 
+        flights[flightKey].updatedTimestamp = now;
+
+        emit FlightTicketsAdded(ticketNumbers, flightKey);
     }
 
-   /**
+    /**
     * @dev Called after oracle has updated flight status
     *
-    */
+    */  
     function processFlightStatus
-                                (
-                                    address airline,
-                                    string memory flight,
-                                    uint256 timestamp,
-                                    uint8 statusCode
-                                )
-                                internal
-                                pure
+    (
+        address airline,
+        string memory flight,
+        uint256 timestamp,
+        uint8 statusCode
+        )
+    internal
+    
     {
+        bytes32 flightKey = getFlightKey(airline, flight, timestamp);
+        flights[flightKey].statusCode = statusCode;
+    //|| statusCode == STATUS_CODE_LATE_WEATHER || statusCode == STATUS_CODE_LATE_OTHER || statusCode == STATUS_CODE_LATE_TECHNICAL
+    if (statusCode == STATUS_CODE_LATE_AIRLINE ){
+        dataContract.creditInsurees(flightKey, CREDIT_RATE);
+    }
+    else{
+        dataContract.creditInsurees(flightKey, 0);
+    }
+
     }
 
 
     // Generate a request for oracles to fetch flight information
     function fetchFlightStatus
-                        (
-                            address airline,
-                            string calldata flight,
-                            uint256 timestamp
-                        )
-                        external
+    (
+        address airline,
+        string flight,
+        uint256 timestamp                            
+        )
+    public
     {
         uint8 index = getRandomIndex(msg.sender);
 
         // Generate a unique key for storing the request
         bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp));
         oracleResponses[key] = ResponseInfo({
-                                                requester: msg.sender,
-                                                isOpen: true
-                                            });
+            requester: msg.sender,
+            isOpen: true
+            });
 
         emit OracleRequest(index, airline, flight, timestamp);
     }
