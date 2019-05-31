@@ -243,7 +243,7 @@ contract('Flight Surety Tests', async (accounts) => {
     assert.equal(registrationStatus, true , "Voting for airlines will make it registered if pass needed number");
 
   });
-  describe(`\n🕴 Passengers 🔮`, async() => {
+  describe(`\n Passengers`, async() => {
 
     it(`passenger can buy insurance for his ticket, event InsuranceBought emited`, async() => {
       console.log("config.passengers[0]");

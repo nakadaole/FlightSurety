@@ -23,7 +23,7 @@ contract('Oracles', async (accounts) => {
 
 
 
-  describe(`\n🕴 Oracles 🔮`, async() => {
+  describe(`\nOracles registration`, async() => {
     it('can register oracles', async () => {
       // ARRANGE
       let fee = await config.flightSuretyApp.REGISTRATION_FEE.call();
