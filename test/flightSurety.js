@@ -99,7 +99,7 @@ contract('Flight Surety Tests', async (accounts) => {
     });
     //ARRANGE
     let newAirline = accounts[8];
-    let startingFundedCount = await config.flightSuretyData.getFundedAirlinesCount.call();
+    let startingFundedCount = await config.flightSuretyData.getFundedAirlinesCount();
     // ACT
     try {
       await config.flightSuretyApp.fundAirline(config.firstAirline, {from: config.firstAirline, value: web3.utils.toWei('10', "ether")});
@@ -108,7 +108,7 @@ contract('Flight Surety Tests', async (accounts) => {
     catch(e) {
     }
 
-    let endingFundedCount = await config.flightSuretyData.getFundedAirlinesCount.call();
+    let endingFundedCount = await config.flightSuretyData.getFundedAirlinesCount();
     assert.equal(endingFundedCount.toNumber(), startingFundedCount.toNumber() + 1 , "funded count did not increase");
 
 
@@ -243,7 +243,7 @@ contract('Flight Surety Tests', async (accounts) => {
     assert.equal(registrationStatus, true , "Voting for airlines will make it registered if pass needed number");
 
   });
-  describe(`\n Passengers`, async() => {
+  describe(`\nPassengers`, async() => {
 
     it(`passenger can buy insurance for his ticket, event InsuranceBought emited`, async() => {
       console.log("config.passengers[0]");

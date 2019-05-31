@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
@@ -11,9 +11,9 @@ contract FlightSuretyData {
     /********************************************************************************************/
 
     address private contractOwner;                                      // Account used to deploy contract
-    bool private operational = true;
-    
-    mapping(address=>bool) private authorizedCallers;                             // Blocks all state changes throughout the contract if false
+    bool private operational = true;                                    // Blocks all state changes throughout the contract if false
+
+    mapping (address=>bool) private authorizedCallers;
 
     struct Airline{
         bool exists;
@@ -55,9 +55,6 @@ contract FlightSuretyData {
 
 
     mapping(address => Airline) private airlines;
-    /********************************************************************************************/
-    /*                                       EVENT DEFINITIONS                                  */
-    /********************************************************************************************/
 
     event AirlineExist(address airlineAddress, bool exist);
     event AirlineRegistered(address airlineAddress, bool exist, bool registered);
@@ -68,33 +65,39 @@ contract FlightSuretyData {
     event AuthorizeCaller(address caller);
     event InsurancePaid(uint amount, address to);
     event InsuranceStateValue(InsuranceState state);
+    /********************************************************************************************/
+    /*                                       EVENT DEFINITIONS                                  */
+    /********************************************************************************************/
+
 
     /**
     * @dev Constructor
     *      The deploying account becomes contractOwner
     */
     constructor
-                                (
-                                    address airlineAddress
-                                )
-                                public
+    (
+        address airlineAddress
+        ) 
+    public 
     {
         contractOwner = msg.sender;
-        //init airline
         airlines[airlineAddress] = Airline({
             exists:true,
-            registered:true,
+            registered:true, 
             funded: false,
             flightKeys: new bytes32[](0),
             votes: Votes(0),
             numberOfInsurance:0
-        });
+
+            });
 
         airlinesCount = airlinesCount.add(1);
         registeredAirlinesCount = registeredAirlinesCount.add(1);
-
+        // fundedAirlinesCount = fundedAirlinesCount.add(1);
         emit AirlineExist(airlineAddress,  airlines[airlineAddress].exists);
         emit AirlineRegistered( airlineAddress,  airlines[airlineAddress].exists, airlines[airlineAddress].registered);
+        // emit AirlineFunded( airlineAddress,  airlines[airlineAddress].exists, airlines[airlineAddress].registered, airlines[airlineAddress].funded);
+
     }
 
     /********************************************************************************************/
@@ -106,10 +109,10 @@ contract FlightSuretyData {
 
     /**
     * @dev Modifier that requires the "operational" boolean variable to be "true"
-    *      This is used on all state changing functions to pause the contract in
+    *      This is used on all state changing functions to pause the contract in 
     *      the event there is an issue that needs to be fixed
     */
-    modifier requireIsOperational()
+    modifier requireIsOperational() 
     {
         require(operational, "Contract is currently not operational");
         _;  // All modifiers require an "_" which indicates where the function body will be added
@@ -124,10 +127,10 @@ contract FlightSuretyData {
         _;
     }
 
-     /**
+    /**
     * @dev Modifier that requires the airline address to be presend in airlines array
     */
-    modifier requireAirLineExist(address airlineAddress)
+    modifier requireAirLineExist(address airlineAddress) 
     {
         require(airlines[airlineAddress].exists, "Airline does not exist in requireAirLineExist");
         _;  // All modifiers require an "_" which indicates where the function body will be added
@@ -136,7 +139,7 @@ contract FlightSuretyData {
     /**
     * @dev Modifier that requires the airline address to be registered in airlines array
     */
-    modifier requireAirLineRegistered(address airlineAddress)
+    modifier requireAirLineRegistered(address airlineAddress) 
     {
         require(airlines[airlineAddress].exists, "Airline does not exist in requireAirLineRegistered");
         require(airlines[airlineAddress].registered, "Airline is not registered in requireAirLineRegistered");
@@ -146,7 +149,7 @@ contract FlightSuretyData {
     /**
     * @dev Modifier that requires the airline address to be funded in airlines array
     */
-    modifier requireAirLineFunded(address airlineAddress)
+    modifier requireAirLineFunded(address airlineAddress) 
     {
         require(airlines[airlineAddress].exists, "Airline does not exist in requireAirLineFunded");
         require(airlines[airlineAddress].registered, "Airline is not registered in requireAirLineFunded");
@@ -171,11 +174,11 @@ contract FlightSuretyData {
     * @dev Get operating status of contract
     *
     * @return A bool that is the current operating status
-    */
-    function isOperational()
-                            public
-                            view
-                            returns(bool)
+    */      
+    function isOperational() 
+    public 
+    view 
+    returns(bool) 
     {
         return operational;
     }
@@ -185,21 +188,24 @@ contract FlightSuretyData {
     * @dev Sets contract operations on/off
     *
     * When operational mode is disabled, all write transactions except for this one will fail
-    */
+    */ 
     function setOperatingStatus
-                            (
-                                bool mode
-                            )
-                            external
-                            requireContractOwner
+
+    (
+        bool mode
+        ) 
+    public
+    requireContractOwner 
+
     {
         operational = mode;
     }
 
+
     function authorizeCaller(address contractAddress)
-        public
-        requireContractOwner
-        requireIsOperational
+    public
+    requireContractOwner
+    requireIsOperational
     {
         authorizedCallers[contractAddress] = true;
         emit AuthorizeCaller(contractAddress);
@@ -220,7 +226,7 @@ contract FlightSuretyData {
     * @dev Add an airline to the registration queue
     *      Can only be called from FlightSuretyApp contract
     *
-    */
+    */   
     function registerAirline
     (
         address airlineAddress,
@@ -260,7 +266,8 @@ contract FlightSuretyData {
 
     }
 
-    /**
+
+ /**
     * @dev vote for an airline to be registered 
     *
     */   
@@ -301,6 +308,7 @@ contract FlightSuretyData {
         return airlines[airlineAddress].votes.votersCount;
 
     }
+
 
     function addFlightKeyToAirline
     (
@@ -360,16 +368,15 @@ contract FlightSuretyData {
 
     }
 
-    //generate flight key
     function getFlightKey
-                        (
-                            address airline,
-                            string memory flight,
-                            uint256 timestamp
-                        )
-                        pure
-                        internal
-                        returns(bytes32)
+    (
+        address airline,
+        string memory flight,
+        uint256 timestamp
+        )
+    pure
+    internal
+    returns(bytes32) 
     {
         return keccak256(abi.encodePacked(airline, flight, timestamp));
     }
@@ -378,12 +385,13 @@ contract FlightSuretyData {
     * @dev Fallback function for funding smart contract.
     *
     */
-    function()
-                            external
-                            payable
+    function() 
+    public 
+    payable 
     {
         fund(msg.sender);
     }
+
 
     function airlineExists(address airlineAddress)
     public
@@ -392,6 +400,7 @@ contract FlightSuretyData {
     {
         return airlines[airlineAddress].exists;
     }
+
 
     function airlineRegistered(address airlineAddress)
     public
@@ -415,7 +424,6 @@ contract FlightSuretyData {
     }
 
     function getFundedAirlinesCount()
-    public
     requireIsOperational
     view
     returns(uint)
@@ -424,7 +432,6 @@ contract FlightSuretyData {
     }
 
     function getRegisteredAirlinesCount()
-    public
     requireIsOperational
     view
     returns(uint)
@@ -434,7 +441,6 @@ contract FlightSuretyData {
 
 
     function getExistAirlinesCount()
-    public
     requireIsOperational
     view
     returns(uint)
@@ -445,12 +451,12 @@ contract FlightSuretyData {
 
 
     function getMinimumRequireVotingCount()
-    public
     view
     returns(uint)
     {
         return registeredAirlinesCount.div(2);
-    }
+    }   
+
 
     function getInsuranceKey
     (
@@ -459,8 +465,8 @@ contract FlightSuretyData {
 
         )
     private
-    pure
-    returns(bytes32)
+    pure 
+    returns(bytes32) 
     {
         return keccak256(abi.encodePacked(flightKey, ticketNumber));
     }
@@ -487,6 +493,18 @@ contract FlightSuretyData {
 
         flightInsuranceKeys[flightKey].push(insuranceKey);
     }
+
+
+
+
+
+    // bool isExist,
+    // bool registered,
+    // bool funded,
+    // uint votesCount,
+    // bytes32[] memory flightKeys,
+    // uint numberOfInsurance
+
 
     function fetchAirlineData(address airlineAddress)
     public
@@ -534,6 +552,9 @@ contract FlightSuretyData {
             _insurance.ticketNumber,
             _insurance.state);
     }
+
+
+
 
     function fetchPasengerInsurances(address passengerAddress)
     public
