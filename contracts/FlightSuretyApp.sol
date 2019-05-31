@@ -1,4 +1,4 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.4.24;
 
 // It's important to avoid vulnerabilities due to numeric overflow bugs
 // OpenZeppelin's SafeMath library, when used correctly, protects agains such bugs
@@ -163,7 +163,7 @@ contract FlightSuretyApp {
     requireIsFundedAirLine(msg.sender)
     {
         // bool needsVoting = airlineRegistrationNeedsVoting();
-        if ( dataContract.getRegisteredAirlinesCount() >= MinimumAirlinesCount){
+        if ( dataContract.getRegisteredAirlinesCount() >= MinimumAirLinesCount){
             dataContract.registerAirline(airlineAddress, false);
             emit AirlineAdded(airlineAddress);
         }
